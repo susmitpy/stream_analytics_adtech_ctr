@@ -86,7 +86,7 @@ The producer is a Go application located in the `producer/` directory. Its sole 
 *   It produces messages to two topics: `impressions` and `clicks`.
 *   It generates approximately 5 impressions per second.
 *   For each impression, there is a 25% probability that a corresponding `click` event is generated.
-*   Clicks are intentionally delayed by a random duration (up to 10 seconds) to simulate real-world user behavior and test the stream processor's ability to handle out-of-order events.
+*   Clicks are delayed by a random duration (up to 10 seconds).
 
 ### 2. Flink Processing
 
@@ -132,18 +132,17 @@ This project was a fantastic learning experience, and I'm walking away with seve
 
 ### 1. My First Go Project
 *   **Learning the Language:** I chose Go for the data producer specifically to learn it. Using goroutines to simulate click delays was a perfect, hands-on introduction to its powerful concurrency model.
-*   **Clean JSON Handling:** I really liked how Go handles JSON serialization with struct tags. Defining the JSON key directly in the struct (e.g., `CampaignID string \`json:"campaign_id"\``) felt clean and intuitive. As a heavy user of Python's dataclasses, this feature felt both familiar and powerful.
+*   **Clean JSON Handling:** I really liked how Go handles JSON serialization with struct tags. Defining the JSON key directly in the struct felt clean and intuitive. As a heavy user of Python's dataclasses, this feature felt very powerful.
 
 ### 2. Crucial Bash Learnings
 *   **`trap` for Cleanup:** I learned to use the `trap` command for robust script cleanup, which functions much like Go's `defer`. It ensures my Docker containers always shut down cleanly.
-*   **`sh -n` for Dry Runs:** Using `sh -n` to perform syntax checks on my script without executing it was a simple but effective way to catch errors early.
 
 ### 3. Flink Insights and Gotchas
 *   **Timestamp Precision is Critical:** I learned you must be precise with timestamp data types. I had to explicitly cast numeric epoch values to `TIMESTAMP_LTZ` for Flink's watermarking and time-based joins to function correctly.
 *   **Data Columns vs. Logical Aliases:** I discovered a key PyFlink API distinction: use `table_obj.column_name` for clarity when accessing physical data columns. However, for logical constructs created in the plan (like a window defined with `.alias("w")`), you **must** use `E.col("w")` to reference them. This highlights the difference between the data schema and the logical plan.
 *   **Append vs. Update Streams:** I gained a clearer understanding of how windowed aggregations are crucial for creating simple, append-only output streams that are compatible with most sinks, as opposed to continuous aggregations which can produce retractions.
 *   **Fail Fast, Don't Ignore Errors:** My takeaway is to never configure jobs to ignore parse errors. It's better to let the job fail fast, which immediately signals an upstream data quality issue that needs to be fixed.
-*   **Architecture: Flink -> Kafka -> Sink:** I realized a more robust architectural pattern is often to sink Flink results back to a Kafka topic. From there, Kafka Connect can reliably handle delivery to a final destination (like MongoDB), offering more flexibility than native Flink sinks.
+*   **Architecture: Flink -> Kafka -> Sink:** I realized a more robust architectural pattern is often to sink Flink results back to a Kafka topic. From there, Kafka Connect can reliably handle delivery to a final destination (like MongoDB), offering more flexibility than native Flink sinks. This might be the reason why there is no MongoDB connector for Flink 2.1 yet.
 
 ### 4. AI-Assisted Development
 *   **Git Ingest for Full Context:** The ability to provide my entire codebase as context to the LLM was a massive help. It enabled a much deeper understanding of the project, which made generating documentation and debugging far more efficient.
