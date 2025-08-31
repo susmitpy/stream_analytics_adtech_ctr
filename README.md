@@ -2,7 +2,7 @@
 
 This project demonstrates a complete, real-time stream processing pipeline to calculate the Click-Through Rate (CTR) for advertising campaigns. It uses a Go-based data producer to simulate user impressions and clicks, Kafka as the message bus, and a PyFlink job to process the data in real-time.
 
-Demo Video: [Demo Video](https://youtu.be/BsgQgPNZHYc)
+[Demo Video](https://youtu.be/BsgQgPNZHYc)
 
 ## 📑 Table of Contents
 
