@@ -1,0 +1,21 @@
+FROM flink:2.1.0
+
+# Note: default-jdk is installed and JAVA_HOME variable is set for Mac ARM64 architecture compatibility
+
+# install python3 and pip3
+RUN apt-get update -y && \
+apt-get install -y default-jdk python3 python3-pip python3-dev && rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# install PyFlink
+RUN pip3 install apache-flink==2.1.0
+
+# install additional python dependencies
+RUN pip install Jinja2==3.1.6
+
+# download dependencies for connectors
+## Kafka (kafka connector does not contain kafka client, hence sql connector is used)
+RUN wget -P /opt/flink/lib https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/4.0.1-2.0/flink-sql-connector-kafka-4.0.1-2.0.jar
